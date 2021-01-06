@@ -32,7 +32,7 @@ def get_questions():
     return questions[5:]
 
 def get_the_last_question():
-    # he everytime asks the one question
+    # he always asks one question at the end
     return "AwACAgIAAxkDAAIB2V-6gbx4xTx9kDSiuMxxRRSCJXl2AAL7CgACSHTYSZsG1PijxVvfHgQ" 
 
 def make_interview(chat_id):

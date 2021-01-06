@@ -1,12 +1,7 @@
-import pymongo, sys
-from settings import settings
-
-client = pymongo.MongoClient(settings.DBCONNECT)
-db = client.dudebot
+from db import database as db
 
 def add_values(collection, values):
     collection = db[collection]
-    print(values)
     collection.insert_many(values)
 
 def add_value(collection, value):
@@ -23,7 +18,7 @@ def get_values(collection, elements={}):
     results = collection.find(elements)
     return [r for r in results]
 
-def clear_values(collection, query={}):
+def clear_values(collection):
     collection = db[collection]
     collection.delete_many({})
     return True
