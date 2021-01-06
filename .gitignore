@@ -9,6 +9,6 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-finish_files/
-voices/
-.vscode/
+/voices/
+/finish_files/
+/.vscode/
