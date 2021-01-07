@@ -3,7 +3,7 @@ from requests import get
 from telebot import TeleBot
 from settings import settings
 from pydub import AudioSegment
-from db import mongo
+from mongo import mongo
 import os
 
 
@@ -31,7 +31,7 @@ def get_questions():
         questions.append(current["id"])
 
     shuffle(questions)
-    return questions[5:]
+    return questions[:5]
 
 
 def get_the_last_question():
@@ -43,20 +43,20 @@ def make_interview(chat_id):
     questions = get_questions()
     questions.append(get_the_last_question())
 
-    mongo.clear_values("user_questions_quee")
+    mongo.clear_values("user_questions_queue")
     user_questions = {
         "chat_id": chat_id,
         "questions": questions,
         "answers": []
     }
 
-    mongo.add_value("user_questions_quee", user_questions)
+    mongo.add_value("user_questions_queue", user_questions)
 
     return questions[0]  # return the first
 
 
 def get_user_questions(chat_id):
-    return mongo.get_values("user_questions_quee", {"chat_id": chat_id})
+    return mongo.get_values("user_questions_queue", {"chat_id": chat_id})
 
 
 def save_new_answer(chat_id, answer_file_id):
@@ -71,7 +71,7 @@ def save_new_answer(chat_id, answer_file_id):
     questions = user_questions['questions']
 
     answers.append(answer_file_id)
-    mongo.update_value("user_questions_quee", {"chat_id": chat_id}, user_questions)
+    mongo.update_value("user_questions_queue", {"chat_id": chat_id}, user_questions)
 
     if len(answers) == len(questions):
         return 2  # we asked all
@@ -88,7 +88,7 @@ def get_finish_file(chat_id):
 
     user_questions = get_user_questions(chat_id)[0]
 
-    mongo.clear_values("user_questions_quee")
+    mongo.clear_values("user_questions_queue")
 
     files_ids = []
     answers_count = len(user_questions['answers'])
@@ -120,7 +120,7 @@ def get_finish_file(chat_id):
     finish_file = AudioSegment.empty()
     for voice in files:
         finish_file += AudioSegment.from_ogg(voice)
+        os.remove(voice)
 
     file_name = cur_dir + "/finish_files/{}_finish_file.ogg".format(chat_id)
-
     return finish_file.export(file_name, format="ogg", bitrate="192k")
